@@ -14,7 +14,7 @@ const createUser= async(req,res,next)=>{
         }
         const user = await User.create(userData);
         const token = jwt.sign(
-            {userId: user._id},
+            {userId: user._id,role: user.role},
             process.env.JWT_secret,
             {expiresIn:"1d"}
 

@@ -7,7 +7,14 @@ const protect= (req,res,next)=>{
             message:"No token provided"});
     } 
     const decoded = jwt.verify(token,process.env.JWT_secret);
-    req.userId= decoded.userId;
+    req.user={
+        id:decoded.userId,
+        role:decoded.role
+        
+
+
+    };
+
     next();
 
     }catch(error){

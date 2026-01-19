@@ -1,11 +1,16 @@
 const mongoose = require("mongoose");
 
 const ItemSchema= new mongoose.Schema({
+    createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true
+  },
     ItemName:{
         type:String,
         required: true,
         trim: true,
-        unique: true
+        
     },
     Description:{
         type:String,

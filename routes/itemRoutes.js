@@ -1,8 +1,10 @@
 const express = require("express");
-const validateitem= require("../middleware/validateitem")
-const {addItems,updateitem,allitem,itembyId}=require("../controllers/itemsController")
+const validateitem= require("../middleware/validateitem");
+const {addItems,updateitem,allitem,itembyId,getItems}=require("../controllers/itemsController");
+const ownercheck= require("../middleware/ownershipcheck");
 const protect=require("../middleware/jwtprotect");
 const connectdb=require("../models/item");
+const itemdata = require("../middleware/itemdata");
 const route=express.Router();
 
 /**
@@ -74,7 +76,7 @@ route.post('/add',protect,validateitem,addItems);
  *         description: Item not found
  */
 
-route.patch('/:id',protect,updateitem);
+route.patch('/:id',protect,ownercheck,updateitem);
 /**
  * @swagger
  * /api/items/itemlist:
@@ -89,6 +91,7 @@ route.patch('/:id',protect,updateitem);
  */
 
 route.get('/itemlist',protect,allitem);
+route.get('/getItems',itemdata,getItems);
 /**
  * @swagger
  * /api/items/{id}:

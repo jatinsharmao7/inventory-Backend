@@ -2,10 +2,15 @@ const Item = require("../models/item");
 
 const addItems = async (req, res, next) => {
     try {
-        const Itemdata = req.body;
+        const Itemdata={
+            ...req.body,
+            createdBy:req.user.id
+        };
+        
         const existItem = await Item.findOne({ ItemName: Itemdata.ItemName });
+        
         if (existItem) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: "Item already exist"
             });
         }
@@ -58,6 +63,7 @@ const allitem = async (req, res, next) => {
     try {
         const items = await Item.find();
 
+
         return res.status(200).json({
             success: true,
             count: items.length,
@@ -65,6 +71,37 @@ const allitem = async (req, res, next) => {
         })
 
     } catch (error) {
+        next(error);
+    }
+
+}
+const getItems=async(req,res,next)=>{
+    try{
+        const filter={}
+        if(req.query.ItemName){
+            filter.ItemName={
+                $regex:req.query.ItemName,
+                $options:"i"
+            }
+        }
+        if(req.query.minPrice||req.query.maxPrice){
+            filter.Price={}
+
+            if(req.query.minPrice){
+                filter.Price.$gte= Number(req.query.minPrice);
+            }
+            if(req.query.maxPrice){
+                filter.Price.$lte=Number(req.query.maxPrice);
+            }
+            
+        }
+        if(req.query.inStock==='true'){
+            filter.Stock={$gt:7};
+        }
+        const item= await Item.find(filter);
+        return res.status(200).json(item);
+
+    }catch(error){
         next(error);
     }
 
@@ -92,4 +129,4 @@ const itembyId= async(req,res,next)=>{
     }
     
 }
-module.exports = { addItems, updateitem, allitem , itembyId};
+module.exports = { addItems, updateitem, allitem , itembyId, getItems};
